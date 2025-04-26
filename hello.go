@@ -1,12 +1,15 @@
 package main
 
 import (
-	"encoding/json"
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+	"os"
+	"strings"
 )
 
 // import "encoding/json"
@@ -19,16 +22,23 @@ type User struct {
 func main(){
 	// x := 2;
 	print("Initialized Client\n");
+	users := []User{};
 	for {
 		user := User{}
-		users := []User{};
+		reader := bufio.NewReader(os.Stdin);
 		fmt.Print("Enter username: ");
-		fmt.Scanf("%s", &user.Username);
+		username, _ := reader.ReadString('\n');
+		user.Username = strings.TrimSpace(username);
 		// fmt.Print("Enter time: ");
 		user.Time = time.Now().Unix();
 		fmt.Print("Enter Authorizer: ");
-		fmt.Scanf("%s", &user.Authorizer);
+		authorizer, _ := reader.ReadString('\n');
+		user.Authorizer = strings.TrimSpace(authorizer);
 		users = append(users, user);
+		if user.Username == "exit" {
+			break;
+		}
+
 		// data, := json.Marshal(user);
 		jsonData, jerr := json.Marshal(user);
 		if jerr != nil {
@@ -57,5 +67,9 @@ func main(){
 		fmt.Println("hello, World!");
 		fmt.Println("Status", resp.Status);
 		fmt.Println("Body: ", string(body));
+		// fmt.Println(users);
+		data, _ := json.Marshal(users);
+		fmt.Println("Data: ", string(data));
 	}
+	
 }
